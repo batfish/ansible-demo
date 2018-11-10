@@ -1,0 +1,153 @@
+#   Copyright 2018 The Batfish Open Source Project
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Build new leaf router config from user inputs and existing jinja2 templates.
+#
+# Saved variables:
+#   base_snapshot_dir: Directory containing base snapshot files
+#   demo_base_dir: Absolute path to demo repository base directory
+#   demo_snapshot_dir: Directory containing new leaf config files
+---
+- name: Create new leaf router configuration
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+
+  vars:
+    demo_snapshot_dir: "{{ demo_base_dir }}/snapshots/snapshot1"
+    base_snapshot_dir: "{{ demo_base_dir }}/snapshots/snapshot0"
+    demo_cfg_dir: "{{ demo_snapshot_dir }}/configs"
+    tmp_cfg_dir: "{{ demo_base_dir }}/snapshots/tmp"
+
+
+  vars_prompt:
+    - name: "hostname"
+      prompt: "Enter hostname for new leaf:"
+      private: no
+
+    - name: "POD_ID"
+      prompt: "Enter POD_ID for the new leaf:"
+      private: no
+
+    - name: "BGP_AS"
+      prompt: "Enter BGP AS Number for the new leaf:"
+      private: no
+
+
+  tasks:
+    - name: Delete old snapshot directory if it exists
+      file:
+        state: absent
+        path: "{{ demo_snapshot_dir }}"
+      tags: always
+
+    - name: Create temporary directory for config snippets
+      file:
+        path: "{{ tmp_cfg_dir }}"
+        state: directory
+        mode: 0755
+      tags: always
+
+    - name: Generate new leaf configuration file
+      debug:
+        msg: "Generating leaf config file for {{ hostname }} in POD {{ POD_ID }}"
+      tags: always
+
+    - name: Retrieve device attributes from SOT
+      include_vars:
+        file: "{{ demo_base_dir }}/inputs/{{ hostname }}.json"
+      tags: always
+
+    - name: Set BGP AS variable for template to use
+      set_fact:
+        bgp_as: "{{ BGP_AS }}"
+      tags: always
+
+    - name: Create directory for configuration changes
+      file:
+        path: "{{ demo_cfg_dir }}"
+        state: directory
+        mode: 0755
+      tags: always
+
+    - name: Building beginning of conf file from template
+      template:
+        src: "{{ demo_base_dir }}/templates/system_start.j2"
+        dest: "{{ tmp_cfg_dir }}/1_system_start.cfg"
+      tags: always
+
+    - name: Building Loopback interface from template
+      template:
+        src: "{{ demo_base_dir }}/templates/loopback.j2"
+        dest: "{{ tmp_cfg_dir }}/2_loopback.cfg"
+      tags: always
+
+    - name: Building Ethernet interfaces from template
+      template:
+        src: "{{ demo_base_dir }}/templates/eth_interface.j2"
+        dest: "{{ tmp_cfg_dir }}/3_eth_interface.cfg"
+      tags: always
+
+    - name: Building OSPF configuration from template
+      template:
+        src: "{{ demo_base_dir }}/templates/ospf.j2"
+        dest: "{{ tmp_cfg_dir }}/4_ospf.cfg"
+      tags: always
+
+    - name: Building BGP configuration from template
+      template:
+        src: "{{ demo_base_dir }}/templates/bgp.j2"
+        dest: "{{ tmp_cfg_dir }}/5_bgp.cfg"
+      tags: always
+
+    - name: Load ACL definition from SOT
+      include_vars:
+        file: "{{ demo_base_dir }}/inputs/acls.json"
+      tags: always
+
+    - name: Building ACL configuration from template
+      template:
+        src: "{{ demo_base_dir }}/templates/acl.j2"
+        dest: "{{ tmp_cfg_dir }}/6_acl.cfg"
+      tags: always
+      when: acls | length !=0
+
+    - name: Building beginning of conf file from template
+      template:
+        src: "{{ demo_base_dir }}/templates/system_end.j2"
+        dest: "{{ tmp_cfg_dir }}/7_system_end.cfg"
+      tags: always
+
+    - name: Assembling full configuration file from the individual snippets
+      assemble:
+        src: "{{ tmp_cfg_dir }}"
+        dest: "{{ demo_cfg_dir }}/{{ hostname }}.cfg"
+      tags: always
+
+    - name: Delete temporary directory for config snippets
+      file:
+        path: "{{ tmp_cfg_dir }}"
+        state: absent
+      tags: always
+
+    - name: Export snapshot path
+      set_fact:
+          demo_snapshot_dir: "{{ demo_snapshot_dir }}"
+      tags: always
+
+    - name: Export base snapshot path
+      set_fact:
+          base_snapshot_dir: "{{ base_snapshot_dir }}"
+      tags: always

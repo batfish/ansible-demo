@@ -1,0 +1,38 @@
+!
+!
+ip forward-protocol nd
+!
+!
+no ip source-route
+!
+!
+no ip http server
+no ip http secure-server
+!
+access-list 1 permit 192.168.60.0 0.0.0.255
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 1 1
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line vty 0 2
+ transport input telnet
+ login authentication default
+line vty 3 5
+ access-class 1 in vrf-also
+ transport input ssh
+!
+!
+end

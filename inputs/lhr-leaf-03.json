@@ -1,0 +1,50 @@
+{
+    "hostname": "lhr-leaf-03",
+	"mgmt_ip": "192.168.60.40",
+	"loop_ip": "10.10.255.10",
+    "active_interfaces": [
+        {
+            "name": "Ethernet1/0",
+            "description": "lhr-spine-01 eth 1/4",
+            "ip_addr": "10.10.20.49",
+            "mask": "255.255.255.252"
+        },
+        {   
+            "name": "Ethernet1/1",
+            "description": "lhr-spine-02 eth 1/4",
+            "ip_addr": "10.10.20.53",
+            "mask": "255.255.255.252"
+        },
+		{
+			"name": "Ethernet1/7",
+            "description": "hosts",
+            "ip_addr": "10.1.5.1",
+            "mask": "255.255.255.0"
+		}
+    ],
+    "shut_interfaces": [
+    ],
+    "bgp_as": "65002",
+    "host_subnets": [
+        {
+            "network": "10.1.5.0",
+            "mask" : "255.255.255.0"
+        }
+    ],
+    "spines": [
+        {
+            "ip_addr": "10.10.20.50",
+            "bgp_as" : "65101"
+        },
+        {
+            "ip_addr": "10.10.20.54",
+            "bgp_as": "65102"
+        }
+    ],
+    "borders": [
+
+    ],
+    "acls": [
+
+    ]
+}

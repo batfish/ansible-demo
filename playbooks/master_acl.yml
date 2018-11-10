@@ -1,0 +1,76 @@
+#   Copyright 2018 The Batfish Open Source Project
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Runs firewall ACL update demo.
+---
+- name: Master ACL Update
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+- import_playbook: ./update_acl.yml
+  vars:
+    demo_base_dir: "{{ repo_dir }}/{{ ansible_demo_rel_dir }}"
+
+- import_playbook: ./create_candidate_snapshot.yml
+  vars:
+    snapshot_dir: "{{ demo_snapshot_dir }}"
+
+- import_playbook: ./upload_to_git.yml
+  vars:
+    base_git_url: "{{ ansible_demo_github_base_url }}"
+    base_repo_dir: "{{ repo_dir }}"
+    demo_net_repo: "{{ network_repo }}"
+    git_protocol_address: "{{ ansible_git_protocol_address }}"
+    git_username: "{{ ansible_demo_github_username }}"
+    git_password: "{{ ansible_demo_github_oauth_token }}"
+    source_dir: "{{ demo_snapshot_dir }}"
+    branch_name: "firewall-updates"
+    commit_message: "Snapshot {{ candidate_snapshot }}"
+
+- import_playbook: ./validate_acl_change.yml
+  vars:
+    filters: "{{ acl_names }}"
+    nodes: "{{ hostnames }}"
+    source_ips: "{{ src_ips }}"
+    destination_ips: "{{ dst_ips }}"
+    ip_protocols: "{{ protocols }}"
+    destination_ports: "{{ dst_ports }}"
+    bf_candidate_snapshot: "{{ candidate_snapshot }}"
+
+- import_playbook: ./validate.yml
+  vars:
+    skip: "{{ fail }}"
+    external_tests: "{{ tests }}"
+    external_results: "{{ results }}"
+    bf_candidate_snapshot: "{{ candidate_snapshot }}"
+
+- import_playbook: ./write_to_file.yml
+  vars:
+    content: "{{ results }}"
+    demo_base_dir: "{{ repo_dir }}/{{ ansible_demo_rel_dir }}"
+    path: "{{ repo_dir }}/{{ ansible_demo_rel_dir }}/s3_logs"
+    file: "bf-logs-{{ candidate_snapshot }}.json"
+
+- import_playbook: ./upload_to_s3.yml
+  vars:
+    bucket: "{{ s3_bucket }}"
+
+- import_playbook: ./slack_notify.yml
+  vars:
+    bf_candidate_snapshot: "{{ candidate_snapshot }}"
+    bf_status: "{{ summary }}"
+    logs: "{{ log_url }}"
+    test_names: "{{ tests }}"
+    token: "{{ slack_token }}"

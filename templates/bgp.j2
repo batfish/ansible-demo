@@ -1,0 +1,27 @@
+
+!
+router bgp {{ bgp_as }}
+ bgp router-id {{ loop_ip }}
+ bgp log-neighbor-changes
+ bgp additional-paths select all
+ bgp additional-paths receive
+ bgp additional-paths install
+{% for host_subnet in host_subnets %}
+ network {{ host_subnet["network"] }} mask {{ host_subnet["mask"] }}
+{% endfor %}
+{% for spine in spines %}
+ neighbor SPINE peer-group
+ neighbor SPINE soft-reconfiguration inbound
+ neighbor {{ spine["ip_addr"] }} remote-as {{ spine["bgp_as"] }}
+ neighbor {{ spine["ip_addr"] }} peer-group SPINE
+{% endfor %}
+{% for border in borders %}
+ neighbor BORDER peer-group
+ neighbor BORDER soft-reconfiguration inbound
+ neighbor {{ border["ip_addr"] }} remote-as {{ border["bgp_as"] }}
+ neighbor {{ border["ip_addr"] }} peer-group BORDER
+{% endfor %}
+ maximum-paths eibgp 2
+ bgp bestpath as-path multipath-relax
+!
+

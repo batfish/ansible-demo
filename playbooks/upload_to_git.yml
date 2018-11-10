@@ -1,0 +1,106 @@
+#   Copyright 2018 The Batfish Open Source Project
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Commits and pushes files in directory source_dir on branch branch_name in GitHub.
+# Creates the branch if it does not exist.
+#
+# Inputs:
+#   base_git_url: URL to GitHub organization containing snapshot repo
+#   base_repo_dir: Absolute path to the directory containing repos
+#   demo_net_repo: Name of snapshot repo directory
+#   git_protocol_address: Git protocol address for Ansible Git module
+#   git_username: GitHub username to use connecting to GitHub
+#   git_password: GitHub OAuth token to use connecting to GitHub
+#   source_dir: Directory whose contents to copy into ANSIBLE_DEMO_NET_REPO
+#   branch_name: Branch on which to commit the changes
+#   commit_message: Commit message for changes
+---
+- name: Commit and push files to GitHub branch
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+
+  vars:
+    branch_exists: no
+
+
+  tasks:
+    - name: Print GitHub related configuration
+      debug:
+        msg: "GitHub repo to use is: {{demo_net_repo}}"
+      tags: git
+
+    - name: Retrieve list of branches for demo repo
+      uri:
+        url: "{{base_git_url}}/{{demo_net_repo}}/branches"
+        return_content: yes
+        user: "{{git_username}}"
+        password: "{{git_password}}"
+        force_basic_auth: yes
+        body_format: json
+      register: git_repo
+      tags: git
+
+    - name: Determine if branch already exists
+      set_fact:
+          branch_exists: "{{ branch_exists or item.name == branch_name }}"
+      with_items: "{{git_repo.content}}"
+      tags: git
+
+    - name: Grab master SHA
+      set_fact:
+        master_sha: "{{ (git_repo | json_query(\"json[?name=='master'].commit.sha\"))[0] }}"
+      tags: git
+      when: not branch_exists
+
+    - name: Create JSON data for branch creation if branch doesn't exist
+      set_fact:
+        git_branch_create_body: "{
+          \"ref\":\"refs/heads/{{branch_name}}\",
+          \"sha\":\"{{ master_sha }}\"
+          }"
+      tags: git
+      when: not branch_exists
+
+    - name: Create new branch if branch doesn't exist
+      uri:
+        url: "{{base_git_url}}/{{demo_net_repo}}/git/refs"
+        return_content: yes
+        user: "{{git_username}}"
+        password: "{{git_password}}"
+        force_basic_auth: yes
+        method: POST
+        body_format: json
+        body: "{{git_branch_create_body | to_nice_json}}"
+        status_code: 201
+      register: git_branch
+      tags: git
+      when: not branch_exists
+
+    - name: Checkout Git Repository at branch
+      git:
+        repo: "{{ git_protocol_address }}"
+        dest: "{{base_repo_dir}}/{{demo_net_repo}}"
+        version: "{{branch_name}}"
+      tags: git
+
+    - name: Copy changes into the local git repo, commit, and push
+      shell:
+          "cp -R {{source_dir}}/* {{base_repo_dir}}/{{demo_net_repo}}/;
+          cd {{base_repo_dir}}/{{demo_net_repo}};
+          git add .;
+          git commit -am \"{{ commit_message }}\";
+          git push"
+      tags: git

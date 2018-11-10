@@ -1,0 +1,115 @@
+#   Copyright 2018 The Batfish Open Source Project
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Build firewall configs from user inputs and existing jinja2 templates.
+#
+# Inputs:
+#   demo_base_dir: Absolute path to demo base directory
+# Saved variables:
+#   file_location: Absolute path of created file
+#   filename: Name of created file (same as filename input parameter)
+---
+- name: Create firewall configs
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+
+  vars:
+    demo_snapshot_dir: "{{ demo_base_dir }}/snapshots/snapshot_acl"
+    base_snapshot_dir: "{{ demo_base_dir }}/snapshots/snapshot0"
+    demo_cfg_dir: "{{ demo_snapshot_dir }}/configs"
+    tmp_cfg_dir: "{{ demo_base_dir }}/snapshots/tmp"
+
+
+  vars_prompt:
+    - name: "hostnames"
+      prompt: "Enter firewall hostnames (separated by pipes, e.g. fw1|fw2|fw3):"
+      private: no
+
+    - name: "POD_ID"
+      prompt: "Enter POD_ID:"
+      private: no
+
+    - name: "src_ips"
+      prompt: "Source IPs of new traffic to allow:"
+      private: no
+
+    - name: "dst_ips"
+      prompt: "Destination IPs of new traffic to allow:"
+      private: no
+
+    - name: "protocols"
+      prompt: "IP protocol for new traffic to allow:"
+      private: no
+
+    - name: "dst_ports"
+      prompt: "Destination ports for new traffic to allow:"
+      private: no
+
+
+  tasks:
+    - name: Delete old snapshot directory if it exists
+      file:
+        state: absent
+        path: "{{ demo_snapshot_dir }}"
+      tags: always
+
+
+    - name: Create temporary directory for config snippets
+      file:
+        path: "{{ tmp_cfg_dir }}"
+        state: directory
+        mode: 0755
+      tags: always
+
+    - name: Create directory for configuration changes
+      file:
+        path: "{{ demo_cfg_dir }}"
+        state: directory
+        mode: 0755
+      tags: always
+
+    - name: Generate firewall configs
+      include_tasks: generate_firewall_config.yml
+      loop: "{{ hostnames.split('|') }}"
+      loop_control:
+        loop_var: hostname
+      tags: always
+
+    - name: Delete temporary directory for config snippets
+      file:
+        path: "{{ tmp_cfg_dir }}"
+        state: absent
+      tags: always
+
+    - name: Export snapshot path
+      set_fact:
+          demo_snapshot_dir: "{{ demo_snapshot_dir }}"
+      tags: always
+
+    - name: Export base snapshot path
+      set_fact:
+          base_snapshot_dir: "{{ base_snapshot_dir }}"
+      tags: always
+
+    - name: Export vars
+      set_fact:
+          hostnames: "{{ hostnames }}"
+          acl_names: "{{ acls[0].name }}"
+          src_ips: "{{ src_ips }}"
+          dst_ips: "{{ dst_ips }}"
+          dst_ports: "{{ dst_ports }}"
+          protocols: "{{ protocols }}"
+      tags: always

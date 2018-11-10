@@ -1,0 +1,185 @@
+#   Copyright 2018 The Batfish Open Source Project
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Validate that ACL changes are correct, using three tests:
+# 1. Test that the current ACL does not already permit the specified traffic
+# 2. Test that the changed ACL does permit the specified traffic
+# 3. Test that the changed ACL does not change the treatment of any traffic outside the specified traffic
+# Together, these tests prove that the changed ACL behaves exactly as intended.
+#
+# Inputs:
+#   bf_candidate_snapshot: Name of the snapshot with updated ACLs
+#   bf_base_snapshot: Name of the base snapshot
+#   bf_network: Name of the network containing the snapshots
+#   filters: Regex matching the filter names to test
+#   nodes: Regex matching the hostnames to test
+#   source_ips: Source IPs of the newly allowed flow
+#   destination_ips: Destination IPs of the newly allowed flow
+#   destination_ports: Destination ports of the newly allowed flow
+#   ip_protocols: IP protocols of the newly allowed flow
+# Saved variables:
+#   fail: Boolean indicating whether or not the validation failed
+#   results: Dictionary containing the results of the checks
+#   summary: Textual representation of the check results (PASS|FAIL)
+---
+- name: Validate ACL change has desired effect and no collateral damage
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+
+  vars:
+    # Get around issue with using variables as dictionary keys
+    # https://github.com/ansible/ansible/issues/17324
+    question1: &question1 'Intended traffic is not already permitted'
+    question2: &question2 'Intended traffic is permitted after change'
+    question3: &question3 'No collateral damage caused by change'
+    answer1summary: "PASS"
+    answer2summary: "PASS"
+    answer3summary: "PASS"
+    answer1rows: []
+    answer2rows: []
+    answer3rows: []
+
+
+  tasks:
+    - name: Init summary and tests list
+      set_fact:
+        fail: "False"
+        summary: "PASS"
+        tests: ["ACL Validation"]
+      tags:
+        - always
+
+    - name: "Checking: {{ question1 }}"
+      batfish_searchfilters:
+        name: "{{ bf_base_snapshot }}"
+        network: "{{ bf_network }}"
+        action: "permit"
+        filters: "{{ filters }}"
+        nodes: "{{ nodes }}"
+        source_ips: "{{ source_ips }}"
+        destination_ips: "{{ destination_ips }}"
+        ip_protocols: "{{ ip_protocols }}"
+        destination_ports: "{{ destination_ports }}"
+      register: answer1
+      tags:
+        - always
+
+    - name: Check for failure
+      set_fact:
+        answer1summary: "FAIL, expected 0 results but got {{ answer1.result_verbose | length }}"
+        answer1rows: "{{ answer1.result_verbose }}"
+        fail: "True"
+        summary: "FAIL"
+      tags:
+        - always
+      when: answer1.result_verbose | length > 0
+
+    - name: "Checking: {{ question2 }}"
+      batfish_searchfilters:
+        name: "{{ bf_candidate_snapshot }}"
+        network: "{{ bf_network }}"
+        action: "deny"
+        filters: "{{ filters }}"
+        nodes: "{{ nodes }}"
+        source_ips: "{{ source_ips }}"
+        destination_ips: "{{ destination_ips }}"
+        ip_protocols: "{{ ip_protocols }}"
+        destination_ports: "{{ destination_ports }}"
+      register: answer2
+      tags:
+        - always
+
+    - name: Check for failure
+      set_fact:
+        answer2summary: "FAIL, expected 0 results but got {{ answer2.result_verbose | length }}"
+        answer2rows: "{{ answer2.result_verbose }}"
+        fail: "True"
+        summary: "FAIL"
+      tags:
+        - always
+      when: answer2.result_verbose | length > 0
+
+    - name: "Checking: {{ question3 }}"
+      batfish_searchfilters:
+        name: "{{ bf_base_snapshot }}"
+        reference_snapshot: "{{ bf_candidate_snapshot }}"
+        network: "{{ bf_network }}"
+        filters: "{{ filters }}"
+        nodes: "{{ nodes }}"
+        source_ips: "{{ source_ips }}"
+        destination_ips: "{{ destination_ips }}"
+        ip_protocols: "{{ ip_protocols }}"
+        destination_ports: "{{ destination_ports }}"
+        invert_search: yes
+      register: answer3
+      tags:
+        - always
+
+    - name: Check for failure
+      set_fact:
+        answer3summary: "FAIL, expected 0 results but got {{ answer3.result_verbose | length }}"
+        answer3rows: "{{ answer3.result_verbose }}"
+        fail: "True"
+        summary: "FAIL"
+      tags:
+        - always
+      when: answer3.result_verbose | length > 0
+
+    - name: Save results for log file
+      set_fact:
+        results: {
+                      "result": {
+                        "ACL Validation": {
+                          *question1: "{{ answer1summary }}",
+                          *question2: "{{ answer2summary }}",
+                          *question3: "{{ answer3summary }}"
+                        }
+                      },
+                      "summary": "{{ summary }}"
+                    }
+      tags: always
+
+    - name: Show validation result
+      debug:
+        var: summary
+      tags:
+        - always
+
+    - name: Show validation details
+      debug:
+        var: results
+      when: summary != "PASS"
+      tags:
+        - always
+
+    - name: Save rows for logging
+      set_fact:
+        rows: {
+            "result_verbose": {
+              "ACL Validation": {
+                *question1: "{{ answer1rows }}",
+                *question2: "{{ answer2rows }}",
+                *question3: "{{ answer3rows }}"
+              }
+            }
+          }
+      tags: always
+
+    - name: Export results
+      set_fact:
+        results: "{{ results | combine(rows) }}"
+      tags: always
+

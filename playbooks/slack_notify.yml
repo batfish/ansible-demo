@@ -1,0 +1,92 @@
+#   Copyright 2018 The Batfish Open Source Project
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Sends slack notification.
+#
+# Inputs:
+#   bf_candidate_snapshot: Name of the snapshot to display in the Slack message
+#   bf_network: Name of the network to display in the Slack message
+#   bf_status: Overall status of Batfish checks (PASS|FAIL)
+#   logs: Link to log file to add to Slack message
+#   test_names: Names of the tests run on the snapshot
+#   token: Slack API token to use when posting notification
+---
+- name: Post notification to Slack
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+
+  vars:
+    slack_msg: "Batfish policy validation"
+    slack_color_text:
+      FAIL: 'danger'
+      PASS: 'good'
+    slack_color_code:
+      FAIL: '#ff0000'
+      PASS: '#008000'
+    timestamp: "{{ lookup('pipe','date') }}"
+    # values permitted are 'Long' and 'Short'
+    slack_msg_type: "Long"
+    logs: "None"
+    channel: "#batfish-ansible-demo"
+
+
+  tasks:
+    - name: Update logs link
+      set_fact:
+        logs_link: "<{{logs}}>"
+      when: logs is defined
+      tags: slack
+
+    - name: Send summary notification message to Slack
+      slack:
+        token: "{{ token }}"
+        msg: "{{ slack_msg }} status: {{ bf_status}} logs: {{ logs_link }}"
+        channel: "{{ channel }}"
+        username: ''
+        link_names: 0
+        parse: 'none'
+        color: '{{slack_color_text[bf_status]}}'
+      delegate_to: localhost
+      when: slack_msg_type == "Short"
+      tags: slack
+
+    - name: Send detailed notification message to Slack
+      slack:
+        token: "{{ token }}"
+        attachments:
+          - text: "*Result*\n{{bf_status}}"
+            color: '{{slack_color_code[bf_status]}}'
+            title: Batfish pre-change validation service
+            fields:
+              - title: Network
+                value: "{{bf_network}}"
+                short: True
+              - title: Snapshot
+                value: "{{bf_candidate_snapshot}}"
+                short: True
+              - title: Tests
+                value: "{{test_names | join(', ')}}"
+                short: False
+              - title: Logs
+                value: "{{ logs_link }}"
+                short: False
+        channel: "{{ channel }}"
+        username: ''
+        link_names: 0
+        parse: 'none'
+      delegate_to: localhost
+      when: slack_msg_type == "Long"
+      tags: slack

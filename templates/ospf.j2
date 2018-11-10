@@ -1,0 +1,11 @@
+
+!
+router ospf 1
+ router-id {{ loop_ip }}
+ passive-interface Loopback0
+{% for interface in active_interfaces %}
+{% if 'spine' in interface['description'] %}
+ network {{ interface['ip_addr'] }} 0.0.0.255 area 0
+{% endif %}
+{% endfor %}
+!

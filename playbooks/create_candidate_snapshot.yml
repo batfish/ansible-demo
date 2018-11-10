@@ -1,0 +1,42 @@
+#   Copyright 2018 The Batfish Open Source Project
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Forks base snapshot and adds any files in the specified directory to the new snapshot.
+#
+# Inputs:
+#   bf_candidate_snapshot_prefix: Prefix of the new, candidate snapshot name
+#   bf_base_snapshot: Name of the base snapshot, to copy
+#   bf_network: Name of the network containing the base snapshot
+#   snapshot_dir: Directory containing the files to add to the new snapshot
+# Saved variables:
+#   candidate_snapshot: Name of the newly created snapshot
+---
+- name: Fork candidate snapshot from base snapshot
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+
+  tasks:
+    - name: Export snapshot name
+      set_fact:
+        candidate_snapshot: "{{ bf_candidate_snapshot_prefix }}_{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+      tags: always
+    - name: Initialize candidate snapshot
+      batfish_init:
+        name: "{{ candidate_snapshot }}"
+        base_name: "{{ bf_base_snapshot }}"
+        network: "{{ bf_network }}"
+        path: "{{ snapshot_dir }}"
+      tags: always
