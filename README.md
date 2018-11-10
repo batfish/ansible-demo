@@ -32,7 +32,7 @@ This Git integration allows Ansible to create a branch in the GitHub repository 
 * Clone your network repo e.g.
   `git clone git@github.com:YOUR_ORG_NAME/YOUR_NETWORK_REPO.git`
 
-  Note: The network repo should be formatted the same way as `snapshots/snapshot0/`, with config files in a `configs/` dir at the root of the repo.
+  Note: The network repo should be formatted the same way as [snapshots/snapshot0/](https://github.com/batfish/ansible-demo/blob/master/snapshots/snapshot0/), with config files in a `configs/` dir at the root of the repo.
 * Generate a [GitHub token with access to this repo](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/), then supply the token to the `playbooks/inventory` file
 
 #### S3 Integration
