@@ -48,9 +48,15 @@ This S3 integration is for posting Batfish validation logs to your S3 bucket. Lo
 
 ## Running the Demo
 
-Both scenarios can optionally be run with extra tags `s3`, `slack`, and/or `git` to enable different integrations.
+The example network from the demo is shown below. During the demo, we make two changes to the network:
+1. Add new leaf `leaf-03`, which is not included in the network initially
+2. Update the ACLs on the firewalls to permit a new HTTP service
 
-Note: logs for each playbook run are written to `s3_logs/`.
+<img src="images/batfish-ansible-demo-network-diagram.png" width="600">
+
+Note:
+* Both scenarios can optionally be run with extra tags `s3`, `slack`, and/or `git` to enable different integrations.
+* Logs for each playbook run are written to `s3_logs/`.
 
 ### Add Leaf Scenario
 This scenario adds a new leaf router to an existing datacenter and confirms the changes made adhere to the defined network policies.

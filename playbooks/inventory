@@ -11,7 +11,8 @@ bf_base_snapshot="base_snapshot"
 
 
 # SETUP - edit these to reflect your local setup
-# Absolute path of directory containing Batfish Ansible demo repo
+# Absolute path to parent directory of Batfish Ansible demo repo
+# e.g. if you checked out ansible-demo at /Users/name/git/ansible-demo, repo_dir should be /Users/name/git
 repo_dir="/your/path/to/demo/parent"
 # Name of demo repo dir
 ansible_demo_rel_dir="ansible-demo"
