@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#   Copyright 2018 Intentionet
+#   Copyright 2018 The Batfish Open Source Project
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -92,7 +92,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 try:
     import logging
-    # TODO don't use wildcard here
     from pybatfish.client.commands import (bf_fork_snapshot, bf_init_snapshot,
                                            bf_session, bf_set_network)
     from pybatfish.datamodel.flow import HeaderConstraints

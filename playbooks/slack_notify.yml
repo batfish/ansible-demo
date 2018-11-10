@@ -1,4 +1,4 @@
-#   Copyright 2018 Intentionet
+#   Copyright 2018 The Batfish Open Source Project
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -50,9 +50,7 @@
       when: logs is defined
       tags: slack
 
-    # TODO clean up all the extraneous comments in this file
     - name: Send summary notification message to Slack
-      # examples found here: https://docs.ansible.com/ansible/2.6/modules/slack_module.html
       slack:
         token: "{{ token }}"
         msg: "{{ slack_msg }} status: {{ bf_status}} logs: {{ logs_link }}"
@@ -61,20 +59,11 @@
         link_names: 0
         parse: 'none'
         color: '{{slack_color_text[bf_status]}}'
-        # options for color are: normal, good, warning, danger
-        #   normal: no color bar
-        #   good: green bar
-        #   warning: yellow bar
-        #   danger: red bar
-        # icon_url doesn't seem to do anything at the moment
       delegate_to: localhost
-      # we don't need this since all of the playbooks are being executed on localhost
-      # but if we were connecting to devices and executing plays elsewhere this would be required
       when: slack_msg_type == "Short"
       tags: slack
 
     - name: Send detailed notification message to Slack
-      # examples found here: https://docs.ansible.com/ansible/2.6/modules/slack_module.html
       slack:
         token: "{{ token }}"
         attachments:
@@ -94,13 +83,10 @@
               - title: Logs
                 value: "{{ logs_link }}"
                 short: False
-            # image_url doesn't seem to do anything, not sure why
         channel: "{{ channel }}"
         username: ''
         link_names: 0
         parse: 'none'
       delegate_to: localhost
-      # we don't need this since all of the playbooks are being executed on localhost
-      # but if we were connecting to devices and executing plays elsewhere this would be required
       when: slack_msg_type == "Long"
       tags: slack

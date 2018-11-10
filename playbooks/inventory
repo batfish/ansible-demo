@@ -12,12 +12,11 @@ bf_base_snapshot="base_snapshot"
 
 # SETUP - edit these to reflect your local setup
 # Absolute path of directory containing Batfish Ansible demo repo
-repo_dir="/Users/spencer/Code"
+repo_dir="/your/path/to/demo/parent"
 # Name of demo repo dir
 ansible_demo_rel_dir="ansible-demo"
 
 # S3 INTEGRATION - only needed if you are using S3 integration
-# S3 bucket
 s3_bucket = "your-s3-bucket"
 
 # SLACK INTEGRATION - only needed if you are using Slack integration
@@ -27,11 +26,11 @@ slack_token="ABCDEFGHI/JKLMNOPQR/STUVWXYZ1234567890abcdef"
 
 # GIT INTEGRATION - only needed if you are using Git integration
 # URL for organization on GitHub, containing the network repo
-ansible_demo_github_base_url="https://api.github.com/repos/intentionet"
+ansible_demo_github_base_url="https://api.github.com/repos/YOUR_ORGANIZATION"
 # Git protocol address for Ansible Git module
-ansible_git_protocol_address="git@github.com:intentionet/batfish-ansible-demo"
+ansible_git_protocol_address="git@github.com:YOUR_ORGANIZATION/YOUR_NETWORK_REPO_NAME"
 # GitHub credentials for GitHub integration
-ansible_demo_github_username="username"
-ansible_demo_github_oauth_token="oauth_token"
+ansible_demo_github_username="your-git-username"
+ansible_demo_github_oauth_token="your-git-oauth_token"
 # Name of network repo dir - the network repo needs to be a sibling of the ansible-demo repo (i.e. put in repo_dir)
-network_repo=""
+network_repo="YOUR_NETWORK_REPO_NAME"

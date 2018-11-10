@@ -1,4 +1,4 @@
-#   Copyright 2018 Intentionet
+#   Copyright 2018 The Batfish Open Source Project
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   limitations under the License.
 
 # Writes a file with the given content.
-# TODO Hack: In "Write content to destination", this should not pipe content to_nice_json
 #
 # Inputs:
 #   content: Text to export into a file
