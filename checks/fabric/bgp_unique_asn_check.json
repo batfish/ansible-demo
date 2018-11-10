@@ -1,0 +1,63 @@
+{
+    "class": "org.batfish.question.jsonpathtotable.JsonPathToTableQuestion", 
+    "debug": true, 
+    "differential": false, 
+    "displayHints": {
+        "textDesc": "${asn} is used by nodes ${nodeList}"
+    }, 
+    "innerQuestion": {
+        "class": "org.batfish.question.BgpAsnUseQuestionPlugin$BgpAsnUseQuestion", 
+        "differential": false, 
+        "minCount": 2, 
+        "nodeRegex": "lhr-leaf-.*"
+    }, 
+    "instance": {
+        "description": "Lists ASNs that are used by multiple devices.", 
+        "instanceName": "All Leaf routers use unique BGP ASN", 
+        "longDescription": "In some networks ASNs should not be re-used. This question helps identify violations.", 
+        "tags": [
+            "consistencyAcrossConfigs", 
+            "BGP", 
+            "ASN"
+        ], 
+        "variables": {
+            "minCount": {
+                "description": "Only report ASNs that are used at more than this number of nodes", 
+                "optional": true, 
+                "type": "Integer"
+            }, 
+            "nodeRegex": {
+                "description": "Only check nodes whose name matches this regex", 
+                "type": "nodeSpec", 
+                "value": ".*"
+            }
+        }
+    }, 
+    "pathQuery": {
+        "compositions": {
+            "nodeList": {
+                "dictionary": {
+                    "name": "nameList"
+                }, 
+                "schema": "List<Node>"
+            }
+        }, 
+        "extractions": {
+            "asn": {
+                "index": 1, 
+                "method": "prefix", 
+                "schema": "Integer"
+            }, 
+            "nameList": {
+                "filter": "$.*", 
+                "method": "suffixofsuffix", 
+                "schema": "List<String>"
+            }
+        }, 
+        "path": "$.asns.*"
+    },
+    "assertion": {
+        "type": "countequals",
+        "expect": 0
+    }
+}

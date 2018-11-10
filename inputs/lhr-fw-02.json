@@ -1,0 +1,79 @@
+{
+    "hostname": "lhr-fw-02",
+    "loop_ip": "10.10.255.6",
+    "mgmt_ip": "192.168.60.35",
+    "active_interfaces": [
+        {
+            "name": "Ethernet1/0",
+            "description": "lhr-spine-01 e1/3",
+            "ip_addr": "10.10.10.22",
+            "mask": "255.255.255.252"
+        },
+        {
+            "name": "Ethernet1/1",
+            "description": "lhr-spine-02 e1/3",
+            "ip_addr": "10.10.10.30",
+            "mask": "255.255.255.252"
+        },
+        {
+            "name": "Ethernet1/2",
+            "description": "lhr-border-01 e1/1",
+            "ip_addr": "10.10.10.41",
+            "mask": "255.255.255.252"
+        },
+        {
+            "name": "Ethernet1/3",
+            "description": "lhr-border-02 e1/1",
+            "ip_addr": "10.10.10.45",
+            "mask": "255.255.255.252",
+            "acl_in": "PROTECT_SERVICES_FROM_OUTSIDE"
+        }
+    ],
+    "shut_interfaces": [
+        {
+            "name": "Ethernet0/0"
+        },
+        {
+            "name": "Ethernet1/4"
+        },
+        {
+            "name": "Ethernet1/5"
+        },
+        {
+            "name": "Ethernet1/6"
+        },
+        {
+            "name": "Ethernet1/7"
+        },
+        {
+            "name": "GigabitEthernet2/0"
+        }
+    ],
+    "bgp_as": "65202",
+    "spines": [
+        {
+            "ip_addr": "10.10.10.21",
+            "bgp_as" : "65101"
+        },
+        {
+            "ip_addr": "10.10.10.29",
+            "bgp_as": "65102"
+        }
+    ],
+    "host_subnets": [],
+    "borders": [
+        {
+            "ip_addr": "10.10.10.42",
+            "bgp_as" : "65301"
+        },
+        {
+            "ip_addr": "10.10.10.46",
+            "bgp_as": "65301"
+        }
+    ],
+    "acls": [
+        {
+            "name": "PROTECT_SERVICES_FROM_OUTSIDE"
+        }
+    ]
+}

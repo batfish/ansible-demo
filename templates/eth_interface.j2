@@ -1,0 +1,30 @@
+
+!
+interface GigabitEthernet0/0
+ description Management interface
+ ip vrf forwarding MGMT
+ ip address {{ mgmt_ip }} 255.255.255.0
+ media-type gbic
+ speed 1000
+ duplex full
+ no negotiation auto
+ no cdp enable
+!
+{% for interface in shut_interfaces %}
+interface {{ interface["name"] }}
+ no ip address
+ shutdown
+ duplex auto
+!
+{% endfor %}
+!
+{% for interface in active_interfaces %}
+interface {{ interface["name"] }}
+ description link to {{ interface["description"] }}
+ ip address {{ interface["ip_addr"] }} {{ interface["mask"] }}
+ duplex full
+{{ ' ip ospf network point-to-point' if 'spine' in interface["description"] else '' -}}
+{{ ' ip access-group {} in'.format(interface["acl_in"]) if "acl_in" in interface else '' }}
+!
+{% endfor %}
+!

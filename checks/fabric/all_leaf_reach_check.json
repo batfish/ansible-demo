@@ -1,0 +1,60 @@
+{
+  "class": "org.batfish.question.specifiers.SpecifiersReachabilityQuestion",
+  "differential": false,
+  "includeOneTableKeys": true,
+  "actions": "${actions}",
+  "headers": "${headers}",
+  "pathConstraints": "${pathConstraints}",
+  "instance": {
+    "description": "Return leaf routers that are missing host subnets.",
+    "instanceName": "All Leaf to All Leaf reachability",
+    "tags": [
+      "dataPlane",
+      "reachability"
+    ],
+    "variables": {
+      "actions": {
+        "description": "Only return flows for which the disposition is from this set.",
+        "optional": true,
+        "type": "dispositionSpec",
+        "value": "NO_ROUTE,NULL_ROUTE"
+      },
+      "headers": {
+        "description": "Packet header constraints.",
+        "optional": true,
+        "type": "headerConstraint",
+        "value": {
+          "srcIps": null,
+          "dstIps": "ofLocation(enter([ref.interfacegroup(host_interfaces, mybook)]))",
+          "srcPorts": null,
+          "dstPorts": null,
+          "ipProtocols": null,
+          "applications": null,
+          "icmpCodes": null,
+          "icmpTypes": null,
+          "flowStates": null,
+          "ecns": null,
+          "dscps": null,
+          "packetLengths": null,
+          "fragmentOffsets": null,
+          "tcpFlags": null
+        }
+      },
+      "pathConstraints": {
+        "description": "Constraint the path a flow can take (start/end/transit locations).",
+        "optional": true,
+        "type": "pathConstraint",
+        "value": {
+          "startLocation": "enter([ref.interfacegroup(host_interfaces, mybook)])",
+          "endLocation": null,
+          "transitLocations": null,
+          "forbiddenLocations": null
+        }
+      }
+    }
+  },
+  "assertion": {
+    "type": "countequals",
+    "expect": 0
+  }
+}

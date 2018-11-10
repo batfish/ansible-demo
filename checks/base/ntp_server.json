@@ -1,0 +1,38 @@
+{
+  "class": "org.batfish.question.nodeproperties.NodePropertiesQuestion",
+  "differential": false,
+  "nodes": "${nodes}",
+  "properties": "${properties}",
+  "instance": {
+    "description": "Return NTP server configuration of all nodes",
+    "instanceName": "NTP Server settings check",
+    "tags": [],
+    "variables": {
+      "nodes": {
+        "description": "Include nodes matching this name or regex.",
+        "type": "nodeSpec",
+        "optional": true
+      },
+      "properties": {
+        "description": "Include properties matching this regex.",
+        "type": "nodePropertySpec",
+        "optional": true
+      }
+    }
+  },
+  "exclusions": [
+    {
+      "name": null,
+      "specification": {
+        "NTP_Servers": [
+            "1.2.3.4",
+            "1.2.3.5"
+        ]
+      }
+    }
+  ],
+  "assertion": {
+    "type": "countequals",
+    "expect": 0
+  }
+}

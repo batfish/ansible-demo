@@ -1,0 +1,10 @@
+!
+{% for acl in acls_def %}
+ip access-list extended {{ acl["name"] }}
+{% for line in acl["lines"] %}
+  {{ line }}
+{% endfor %}
+!
+{% endfor %}
+!
+!

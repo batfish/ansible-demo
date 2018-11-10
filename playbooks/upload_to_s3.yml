@@ -1,0 +1,65 @@
+#   Copyright 2018 Intentionet
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Upload the specified file to S3.
+#
+# Inputs:
+#   bucket: S3 bucket to which to upload logs
+#   skip: Determines whether or not this playbook is skipped
+#   file_location: Path to the file to upload
+#   filename: Name of the file to upload
+# Saved variables:
+#   log_url: URL of the uploaded file
+---
+- name: Add files in directory source_dir to s3
+  connection: local
+  hosts: localhost
+  gather_facts: no
+
+
+  tasks:
+    - meta: end_play
+      when: skip is defined and skip
+      tags: always
+
+    - name: upload to s3
+      aws_s3:
+        bucket: "{{ bucket }}"
+        src: "{{ file_location }}"
+        object: "{{ filename }}"
+        mode: put
+      tags: s3
+
+    - name: get s3 URL
+      aws_s3:
+        bucket: "{{ bucket }}"
+        object: "{{ filename }}"
+        mode: geturl
+      register: geturl_output
+      tags: s3
+
+    - name: initialize s3 URL var
+      set_fact:
+        log_url: "None"
+      tags: always
+
+    - name: save s3 URL
+      set_fact:
+        log_url: "{{ geturl_output.url }}"
+      tags: s3
+
+    - name: Show URL to view uploaded file
+      debug:
+        msg: "View uploaded file at {{ log_url }}"
+      tags: s3
