@@ -40,7 +40,7 @@
     # values permitted are 'Long' and 'Short'
     slack_msg_type: "Long"
     logs: "None"
-    channel: "#batfish-ansible-demo"
+    channel: "#general"
 
 
   tasks:
@@ -52,11 +52,11 @@
 
     - name: Send summary notification message to Slack
       slack:
-        token: "{{ token }}"
+        token: "{{ slack_token }}"
         msg: "{{ slack_msg }} status: {{ bf_status}} logs: {{ logs_link }}"
         channel: "{{ channel }}"
-        username: ''
-        link_names: 0
+        username: 'sinan.okay'
+        link_names: 1
         parse: 'none'
         color: '{{slack_color_text[bf_status]}}'
       delegate_to: localhost
@@ -65,7 +65,7 @@
 
     - name: Send detailed notification message to Slack
       slack:
-        token: "{{ token }}"
+        token: "{{ slack_token }}"
         attachments:
           - text: "*Result*\n{{bf_status}}"
             color: '{{slack_color_code[bf_status]}}'
@@ -84,8 +84,8 @@
                 value: "{{ logs_link }}"
                 short: False
         channel: "{{ channel }}"
-        username: ''
-        link_names: 0
+        username: 'sinan.okay'
+        link_names: 1 
         parse: 'none'
       delegate_to: localhost
       when: slack_msg_type == "Long"

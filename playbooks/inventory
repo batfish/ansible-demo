@@ -13,25 +13,25 @@ bf_base_snapshot="base_snapshot"
 # SETUP - edit these to reflect your local setup
 # Absolute path to parent directory of Batfish Ansible demo repo
 # e.g. if you checked out ansible-demo at /Users/name/git/ansible-demo, repo_dir should be /Users/name/git
-repo_dir="/your/path/to/demo/parent"
+repo_dir="/Users/so7175158/Python/"
 # Name of demo repo dir
 ansible_demo_rel_dir="ansible-demo"
 
 # S3 INTEGRATION - only needed if you are using S3 integration
-s3_bucket = "your-s3-bucket"
+s3_bucket = "nanisyako-storage"
 
 # SLACK INTEGRATION - only needed if you are using Slack integration
 # Slack API token
 # note: this is just the final portion of your Slack webhook URL, the part after https://hooks.slack.com/services/
-slack_token="ABCDEFGHI/JKLMNOPQR/STUVWXYZ1234567890abcdef"
+slack_token="TB18CKDLN/BF1H8861K/JHRRBY8HTxMHuulnI41cwJj6"
 
 # GIT INTEGRATION - only needed if you are using Git integration
 # URL for organization on GitHub, containing the network repo
-ansible_demo_github_base_url="https://api.github.com/repos/YOUR_ORGANIZATION"
+ansible_demo_github_base_url="https://api.github.com/repos/nanisyako"
 # Git protocol address for Ansible Git module
-ansible_git_protocol_address="git@github.com:YOUR_ORGANIZATION/YOUR_NETWORK_REPO_NAME"
+ansible_git_protocol_address="git@github.com:nanisyako/ansible-demo.git"
 # GitHub credentials for GitHub integration
-ansible_demo_github_username="your-git-username"
-ansible_demo_github_oauth_token="your-git-oauth_token"
+ansible_demo_github_username="nanisyako"
+ansible_demo_github_oauth_token="cc44e3919da9ca79c5ade450a0add916d73718cf"
 # Name of network repo dir - the network repo needs to be a sibling of the ansible-demo repo (i.e. put in repo_dir)
-network_repo="YOUR_NETWORK_REPO_NAME"
+network_repo="ansible-demo"
