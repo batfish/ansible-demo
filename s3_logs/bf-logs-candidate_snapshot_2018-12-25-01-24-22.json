@@ -1,0 +1,247 @@
+{
+    "changed": false,
+    "failed": false,
+    "result": {
+        "DC Base Policy": {
+            "NTP Server settings check": "PASS",
+            "TACACS Server settings check": "PASS",
+            "Undefined references check": "PASS",
+            "Unreachable filter lines": "PASS",
+            "Unused Structures check": "PASS"
+        },
+        "DC Fabric Policy": {
+            "All BGP Session are Compatible": "FAIL",
+            "All BGP Sessions are Established": "FAIL",
+            "All Leaf routers use unique BGP ASN": "PASS",
+            "All Leaf to All Leaf reachability": "PASS"
+        }
+    },
+    "result_verbose": {
+        "DC Base Policy": {
+            "NTP Server settings check": [],
+            "TACACS Server settings check": [],
+            "Undefined references check": [],
+            "Unreachable filter lines": [],
+            "Unused Structures check": []
+        },
+        "DC Fabric Policy": {
+            "All BGP Session are Compatible": [
+                {
+                    "Configured_Status": "DYNAMIC_MATCH",
+                    "Local_AS": 65101,
+                    "Local_IP": "10.10.20.10",
+                    "Local_Interface": {
+                        "hostname": "lhr-spine-01",
+                        "interface": "Ethernet1/1"
+                    },
+                    "Node": {
+                        "id": "node-lhr-spine-01",
+                        "name": "lhr-spine-01"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 65002
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.20.9"
+                    },
+                    "Remote_Node": {
+                        "id": "node-lhr-leaf-02",
+                        "name": "lhr-leaf-02"
+                    },
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                },
+                {
+                    "Configured_Status": "DYNAMIC_MATCH",
+                    "Local_AS": 65101,
+                    "Local_IP": "10.10.20.50",
+                    "Local_Interface": {
+                        "hostname": "lhr-spine-01",
+                        "interface": "Ethernet1/4"
+                    },
+                    "Node": {
+                        "id": "node-lhr-spine-01",
+                        "name": "lhr-spine-01"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 65003
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.20.49"
+                    },
+                    "Remote_Node": {
+                        "id": "node-lhr-leaf-03",
+                        "name": "lhr-leaf-03"
+                    },
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                },
+                {
+                    "Configured_Status": "DYNAMIC_MATCH",
+                    "Local_AS": 65101,
+                    "Local_IP": "10.10.20.1",
+                    "Local_Interface": {
+                        "hostname": "lhr-spine-01",
+                        "interface": "Ethernet1/0"
+                    },
+                    "Node": {
+                        "id": "node-lhr-spine-01",
+                        "name": "lhr-spine-01"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 65001
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.20.2"
+                    },
+                    "Remote_Node": {
+                        "id": "node-lhr-leaf-01",
+                        "name": "lhr-leaf-01"
+                    },
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                },
+                {
+                    "Configured_Status": "DYNAMIC_MATCH",
+                    "Local_AS": 65102,
+                    "Local_IP": "10.10.20.6",
+                    "Local_Interface": {
+                        "hostname": "lhr-spine-02",
+                        "interface": "Ethernet1/0"
+                    },
+                    "Node": {
+                        "id": "node-lhr-spine-02",
+                        "name": "lhr-spine-02"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 65001
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.20.5"
+                    },
+                    "Remote_Node": {
+                        "id": "node-lhr-leaf-01",
+                        "name": "lhr-leaf-01"
+                    },
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                },
+                {
+                    "Configured_Status": "DYNAMIC_MATCH",
+                    "Local_AS": 65102,
+                    "Local_IP": "10.10.20.54",
+                    "Local_Interface": {
+                        "hostname": "lhr-spine-02",
+                        "interface": "Ethernet1/4"
+                    },
+                    "Node": {
+                        "id": "node-lhr-spine-02",
+                        "name": "lhr-spine-02"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 65003
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.20.53"
+                    },
+                    "Remote_Node": {
+                        "id": "node-lhr-leaf-03",
+                        "name": "lhr-leaf-03"
+                    },
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                },
+                {
+                    "Configured_Status": "DYNAMIC_MATCH",
+                    "Local_AS": 65102,
+                    "Local_IP": "10.10.20.14",
+                    "Local_Interface": {
+                        "hostname": "lhr-spine-02",
+                        "interface": "Ethernet1/1"
+                    },
+                    "Node": {
+                        "id": "node-lhr-spine-02",
+                        "name": "lhr-spine-02"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 65002
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.20.13"
+                    },
+                    "Remote_Node": {
+                        "id": "node-lhr-leaf-02",
+                        "name": "lhr-leaf-02"
+                    },
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                }
+            ],
+            "All BGP Sessions are Established": [
+                {
+                    "Established_Status": "NOT_COMPATIBLE",
+                    "Local_AS": 65301,
+                    "Local_IP": "10.10.40.1",
+                    "Local_Interface": {
+                        "hostname": "lhr-border-01",
+                        "interface": "Ethernet1/2"
+                    },
+                    "Node": {
+                        "id": "node-lhr-border-01",
+                        "name": "lhr-border-01"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 64321
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.40.2"
+                    },
+                    "Remote_Node": null,
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                },
+                {
+                    "Established_Status": "NOT_COMPATIBLE",
+                    "Local_AS": 65301,
+                    "Local_IP": "10.10.30.1",
+                    "Local_Interface": {
+                        "hostname": "lhr-border-02",
+                        "interface": "Ethernet1/3"
+                    },
+                    "Node": {
+                        "id": "node-lhr-border-02",
+                        "name": "lhr-border-02"
+                    },
+                    "Remote_AS": {
+                        "schema": "Long",
+                        "value": 63331
+                    },
+                    "Remote_IP": {
+                        "schema": "Ip",
+                        "value": "10.10.30.2"
+                    },
+                    "Remote_Node": null,
+                    "Session_Type": "EBGP_SINGLEHOP",
+                    "VRF": "default"
+                }
+            ],
+            "All Leaf routers use unique BGP ASN": [],
+            "All Leaf to All Leaf reachability": []
+        }
+    },
+    "summary": "FAIL"
+}
