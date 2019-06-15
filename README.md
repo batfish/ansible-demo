@@ -1,4 +1,4 @@
-**The experimental content in this repository has been archived. Go to [batfish ansible repository] (https://github.com/batfish/ansible) for current content.**
+**The experimental content in this repository has been archived. Go to [batfish ansible repository](https://github.com/batfish/ansible) for current content.**
 
 # ansible-demo
 This repo contains the files and instructions necessary to reproduce our [Ansible demo presentation](https://www.ansible.com/resources/webinars-training/validating-pre-commit-network-configuration-changes-at-scale-with-batfish-ansible), which uses [Pybatfish](https://github.com/batfish/pybatfish) and [Batfish](https://github.com/batfish/batfish) to validate pre-commit network configuration changes.  
